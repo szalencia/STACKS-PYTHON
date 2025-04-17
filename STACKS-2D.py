@@ -10,7 +10,7 @@ pygame.display.set_caption("TEST")
 loop = True
 
 stacksArray = []
-A,B,C,D = [600,850],[1000,850],[1000,900],[600,900]
+stackVertices = [[600,900],[1000,900],[1000,950],[600,950]]
 timeElapsed = 0
 fps = 100
 timeDelay = 1000//fps
@@ -38,6 +38,13 @@ def fadeIn (x, colorSet):
         colorSet[0][i] += step
     return colorSet[0] # Returning the Updated colorSet[0] = present
 
+def pushUp (vertices):
+    vertices[0][1]-=50
+    vertices[1][1]-=50
+    vertices[2][1]-=50
+    vertices[3][1]-=50
+    return vertices
+
 
 while loop :
     pygame.time.delay(timeDelay)
@@ -45,26 +52,25 @@ while loop :
     # GAME INITIALISATION
     if timeElapsed < 1250: #1250/250 = 5, which is no. of initial stacks :)
         if timeElapsed % 250 == 0:
-            A[1]-=50
-            B[1]-=50
-            C[1]-=50
-            D[1]-=50
+            pushUp (stackVertices)
             color = colorUpdate(color)
             colorPresent = [0,0,0]
             colorStep = 25 # 250 miliseconds but 25 steps in total
         colorPresent = fadeIn(colorStep, [colorPresent,color])
         colorStep = colorStep-1
-        pygame.draw.polygon(win,colorPresent,(A,B,C,D))
+        pygame.draw.polygon(win,colorPresent,stackVertices)
 
     # GAME LOGICS RENDER
     else: # Enters right when timeElapsed becomes 1250 at 5th stack :)
-        pygame.draw.polygon(win,color,(A,B,C,D))
+        pygame.draw.polygon(win,color,stackVertices)
     
     # GAME LOGICS ENGINE
     x = pygame.event.get()
     for event in x :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE :
+                pushUp (stackVertices)
+                color = colorUpdate(color)
                 print("SPACEBAR") # WILL BE USED LATER FOR GAMEPLAY
         if event.type == pygame.QUIT :
             loop = False
