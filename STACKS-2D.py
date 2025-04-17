@@ -14,7 +14,9 @@ A,B,C,D = [600,850],[1000,850],[1000,900],[600,900]
 timeElapsed = 0
 fps = 100
 timeDelay = 1000//fps
-color=[100,100,100]
+color=[255,255,255]
+colorPresent = [0,0,0]
+colorStep = 0
 
 # COLOR UPDATE IS NICELY WORKING SO DON'T TOUCH :')
 def colorUpdate (colorLs):
@@ -28,20 +30,33 @@ def colorUpdate (colorLs):
         colorLs[x] = colorLs[x] + ((y-((y+1)%2))*100) # CONVERTING 0/1 TO -1/1 :)
     return colorLs
 
+
+def fadeIn (x, colorSet):
+    # colorSet = [present,target]
+
+    for i in range (3):
+        step = ((colorSet[1][i] - colorSet[0][i])//x)
+        colorSet[0][i] += step
+    return colorSet[0] # Returning the Updated colorSet[0] = present
+
+
 while loop :
     pygame.time.delay(timeDelay)
-    timeElapsed += timeDelay
     if timeElapsed <= 1000:
         if timeElapsed % 250 == 0:
             A[1]-=50
             B[1]-=50
             C[1]-=50
             D[1]-=50
-        pygame.draw.polygon(win,list(color),(A,B,C,D))
-        color = colorUpdate(color)
+            color = colorUpdate(color)
+            colorPresent = [0,0,0]
+            colorStep = 25 # 250 miliseconds but 25 steps in total
+        colorPresent = fadeIn(colorStep, [colorPresent,color])
+        colorStep = colorStep-1
+        print(colorPresent)
+        pygame.draw.polygon(win,colorPresent,(A,B,C,D))
 
-    # GAME LOGIC
-    
+    # GAME LOGICS
     x = pygame.event.get()
     for event in x :
         if event.type == pygame.KEYDOWN :
@@ -50,4 +65,5 @@ while loop :
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
+    timeElapsed += timeDelay
 pygame.quit()
