@@ -43,7 +43,7 @@ while loop :
     pygame.time.delay(timeDelay)
 
     # GAME INITIALISATION
-    if timeElapsed <= 1000:
+    if timeElapsed < 1250: #1250/250 = 5, which is no. of initial stacks :)
         if timeElapsed % 250 == 0:
             A[1]-=50
             B[1]-=50
@@ -55,8 +55,12 @@ while loop :
         colorPresent = fadeIn(colorStep, [colorPresent,color])
         colorStep = colorStep-1
         pygame.draw.polygon(win,colorPresent,(A,B,C,D))
+
+    # GAME LOGICS RENDER
+    else: # Enters right when timeElapsed becomes 1250 at 5th stack :)
+        pygame.draw.polygon(win,color,(A,B,C,D))
     
-    # GAME LOGICS
+    # GAME LOGICS ENGINE
     x = pygame.event.get()
     for event in x :
         if event.type == pygame.KEYDOWN :
