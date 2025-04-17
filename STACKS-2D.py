@@ -3,13 +3,15 @@
 
 import pygame
 import random
+import copy
 
 pygame.init()
 win = pygame.display.set_mode((1600,900))
 pygame.display.set_caption("TEST")
 loop = True
 
-stacksArray = []
+stackArray = []
+colorArray = []
 stackVertices = [[600,900],[1000,900],[1000,950],[600,950]]
 timeElapsed = 0
 fps = 100
@@ -45,6 +47,10 @@ def pushUp (vertices):
     vertices[3][1]-=50
     return vertices
 
+def renderAll (allcolors,allvertices):
+    for i in range (len(allcolors)):
+        pygame.draw.polygon(win,allcolors[i],allvertices[i])
+        pygame.display.update()
 
 while loop :
     pygame.time.delay(timeDelay)
@@ -52,8 +58,10 @@ while loop :
     # GAME INITIALISATION
     if timeElapsed < 1250: #1250/250 = 5, which is no. of initial stacks :)
         if timeElapsed % 250 == 0:
-            pushUp (stackVertices)
+            stackVertices = pushUp (stackVertices)
+            stackArray.append(copy.deepcopy(stackVertices))
             color = colorUpdate(color)
+            colorArray.append(color.copy())
             colorPresent = [0,0,0]
             colorStep = 25 # 250 miliseconds but 25 steps in total
         colorPresent = fadeIn(colorStep, [colorPresent,color])
@@ -69,12 +77,17 @@ while loop :
     for event in x :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE :
-                pushUp (stackVertices)
+                # pushUp (stackVertices)
+                # win.fill((0,0,0))
+                colorArray.pop(0)
+                # stackArray.pop(0)
                 color = colorUpdate(color)
+                colorArray.append(color.copy())
+                # stackArray.append(stackVertices)
+                renderAll(colorArray,stackArray)
                 print("SPACEBAR") # WILL BE USED LATER FOR GAMEPLAY
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
     timeElapsed += timeDelay
-    
 pygame.quit()
