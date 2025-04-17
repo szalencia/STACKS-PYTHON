@@ -33,7 +33,6 @@ def colorUpdate (colorLs):
 
 def fadeIn (x, colorSet):
     # colorSet = [present,target]
-
     for i in range (3):
         step = ((colorSet[1][i] - colorSet[0][i])//x)
         colorSet[0][i] += step
@@ -42,6 +41,8 @@ def fadeIn (x, colorSet):
 
 while loop :
     pygame.time.delay(timeDelay)
+
+    # GAME INITIALISATION
     if timeElapsed <= 1000:
         if timeElapsed % 250 == 0:
             A[1]-=50
@@ -53,17 +54,17 @@ while loop :
             colorStep = 25 # 250 miliseconds but 25 steps in total
         colorPresent = fadeIn(colorStep, [colorPresent,color])
         colorStep = colorStep-1
-        print(colorPresent)
         pygame.draw.polygon(win,colorPresent,(A,B,C,D))
-
+    
     # GAME LOGICS
     x = pygame.event.get()
     for event in x :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE :
-                print("SPACEBAR")
+                print("SPACEBAR") # WILL BE USED LATER FOR GAMEPLAY
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
     timeElapsed += timeDelay
+    
 pygame.quit()
