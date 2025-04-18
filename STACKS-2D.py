@@ -21,6 +21,7 @@ colorPresent = [0,0,0]
 colorStep = 0
 movementStack = "rev"
 
+
 # COLOR UPDATE IS NICELY WORKING SO DON'T TOUCH :')
 def colorUpdate (colorLs):
     x = random.randint(0,2)
@@ -47,11 +48,6 @@ def pushUp (vertices):
     vertices[2][1]-=50
     vertices[3][1]-=50
     return vertices
-
-def renderAll (allcolors,allvertices):
-    for i in range (len(allcolors)-1):
-        pygame.draw.polygon(win,allcolors[i],allvertices[i])
-        pygame.display.update()
 
 while loop :
     pygame.time.delay(timeDelay)
@@ -91,15 +87,21 @@ while loop :
     # GAME LOGICS ENGINE
     x = pygame.event.get()
     for event in x :
-        if event.type == pygame.KEYDOWN :
-            if event.key == pygame.K_SPACE :
-                colorArray.pop(-1)
-                stackArray.pop(-1)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
                 colorArray.append(copy.deepcopy(color))
                 stackArray.append(copy.deepcopy(stackVertices))
-                stackVertices = pushUp(stackVertices)
+                colorArray.pop(0)
+                stackArray.pop(0)
+                # stackVertices = pushUp(stackVertices)
                 color = colorUpdate(color)
-                renderAll(colorArray,stackArray)
+                win.fill((0,0,0))
+                for i in range (len(colorArray)):
+                    for j in range (len(stackArray[i])):
+                        stackArray[i][j][1] = stackArray[i][j][1] + 50
+                    pygame.draw.polygon(win,colorArray[i],stackArray[i])
+                # colorArray.pop(0)
+                # stackArray.pop(0)
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
