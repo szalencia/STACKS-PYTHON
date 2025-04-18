@@ -19,6 +19,7 @@ timeDelay = 1000//fps
 color=[255,255,255]
 colorPresent = [0,0,0]
 colorStep = 0
+movementStack = "rev"
 
 # COLOR UPDATE IS NICELY WORKING SO DON'T TOUCH :')
 def colorUpdate (colorLs):
@@ -48,7 +49,7 @@ def pushUp (vertices):
     return vertices
 
 def renderAll (allcolors,allvertices):
-    for i in range (len(allcolors)):
+    for i in range (len(allcolors)-1):
         pygame.draw.polygon(win,allcolors[i],allvertices[i])
         pygame.display.update()
 
@@ -56,7 +57,7 @@ while loop :
     pygame.time.delay(timeDelay)
 
     # GAME INITIALISATION
-    if timeElapsed < 1250: #1250/250 = 5, which is no. of initial stacks :)
+    if timeElapsed < 2250: #2250/250 = 9, which is no. of initial stacks :)
         if timeElapsed % 250 == 0:
             stackVertices = pushUp (stackVertices)
             stackArray.append(copy.deepcopy(stackVertices))
@@ -69,7 +70,22 @@ while loop :
         pygame.draw.polygon(win,colorPresent,stackVertices)
 
     # GAME LOGICS RENDER
-    else: # Enters right when timeElapsed becomes 1250 at 5th stack :)
+    else: # Enters right when timeElapsed becomes 2250 at 9th stack :)
+        pygame.draw.polygon(win,(0,0,0),stackVertices)
+        if (movementStack == "rev"):
+            stackVertices[0][0]-= 10
+            stackVertices[1][0]-= 10
+            stackVertices[2][0]-= 10
+            stackVertices[3][0]-= 10
+            if stackVertices[1][0]<=(stackArray[-1][0][0]-50):
+                movementStack = "fwd"
+        elif (movementStack == "fwd"):
+            stackVertices[0][0]+= 10
+            stackVertices[1][0]+= 10
+            stackVertices[2][0]+= 10
+            stackVertices[3][0]+= 10
+            if stackVertices[0][0]>=(stackArray[-1][1][0]+50):
+                movementStack = "rev"
         pygame.draw.polygon(win,color,stackVertices)
     
     # GAME LOGICS ENGINE
@@ -80,12 +96,13 @@ while loop :
                 # pushUp (stackVertices)
                 # win.fill((0,0,0))
                 colorArray.pop(0)
+                print(stackArray[-1])
                 # stackArray.pop(0)
                 color = colorUpdate(color)
                 colorArray.append(color.copy())
                 # stackArray.append(stackVertices)
                 renderAll(colorArray,stackArray)
-                print("SPACEBAR") # WILL BE USED LATER FOR GAMEPLAY
+                # print("SPACEBAR") # WILL BE USED LATER FOR GAMEPLAY
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
