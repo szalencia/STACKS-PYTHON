@@ -20,7 +20,6 @@ color=[255,255,255]
 colorPresent = [0,0,0]
 colorStep = 0
 movementStack = "rev"
-pushVertices = list()
 
 # COLOR UPDATE IS NICELY WORKING SO DON'T TOUCH :')
 def colorUpdate (colorLs):
@@ -49,15 +48,7 @@ def pushUp (vertices):
     vertices[3][1]-=50
     return vertices
 
-def pushDn (vertices):
-    vertices[0][1]+=50
-    vertices[1][1]+=50
-    vertices[2][1]+=50
-    vertices[3][1]+=50
-    return vertices
-
 def renderAll (allcolors,allvertices):
-    win.fill((0,0,0))
     for i in range (len(allcolors)-1):
         pygame.draw.polygon(win,allcolors[i],allvertices[i])
         pygame.display.update()
@@ -86,14 +77,14 @@ while loop :
             stackVertices[1][0]-= 10
             stackVertices[2][0]-= 10
             stackVertices[3][0]-= 10
-            if stackVertices[1][0]<=(stackArray[-2][0][0]-50):
+            if stackVertices[1][0]<=(stackArray[-1][0][0]-50):
                 movementStack = "fwd"
         elif (movementStack == "fwd"):
             stackVertices[0][0]+= 10
             stackVertices[1][0]+= 10
             stackVertices[2][0]+= 10
             stackVertices[3][0]+= 10
-            if stackVertices[0][0]>=(stackArray[-2][1][0]+50):
+            if stackVertices[0][0]>=(stackArray[-1][1][0]+50):
                 movementStack = "rev"
         pygame.draw.polygon(win,color,stackVertices)
     
@@ -102,19 +93,13 @@ while loop :
     for event in x :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE :
-                # pushUp (stackVertices)
-                # win.fill((0,0,0))
-                colorArray.pop(0)
-                print(stackArray[-1])
-                stackArray.pop(0)
-                color = colorUpdate(color)
+                colorArray.pop(-1)
+                stackArray.pop(-1)
                 colorArray.append(copy.deepcopy(color))
-                pushVertices = pushDn(copy.deepcopy(stackVertices))
-                for i in range (len(stackArray)-1):
-                    stackArray[i] = pushDn(copy.deepcopy(stackArray[i]))
-                stackArray.append(copy.deepcopy(pushVertices))
+                stackArray.append(copy.deepcopy(stackVertices))
+                stackVertices = pushUp(stackVertices)
+                color = colorUpdate(color)
                 renderAll(colorArray,stackArray)
-                # print("SPACEBAR") # WILL BE USED LATER FOR GAMEPLAY
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
