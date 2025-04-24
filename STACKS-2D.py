@@ -63,6 +63,7 @@ movementStack = "rev"
 vel = 10
 toughness = 5
 colorFont = [0,0,0]
+pointer = (0,0)
 
 pygame.init()
 win = pygame.display.set_mode((1600,900))
@@ -97,16 +98,43 @@ while loop :
         for i in range (100):
             colorFont = fadeIn(100-i, [colorFont,(255,255,255)])
             pygame.time.delay(timeDelay)
+            timeElapsed += timeDelay
             win.blit(font.render("STACKS 2D",True, colorFont), (100,100))
             win.blit(font.render("New Game",True, colorFont), (100,200))
-            win.blit(font.render("Quit",True, colorFont), (100,250))
+            win.blit(font.render("Level",True, colorFont), (100,250))
+            win.blit(font.render("Quit Game",True, colorFont), (100,300))
             pygame.display.update()
+
+        menuGame = font.render("New Game", True, (255, 255, 255))
+        menuLevel = font.render("Level", True, (255, 255, 255))
+        menuQuit = font.render("Quit Game", True, (255, 255, 255))
         
         win.blit(font.render("STACKS 2D",True, (255,255,255)), (100,100))
-        win.blit(font.render("New Game",True, (255,255,255)), (100,200))
-        win.blit(font.render("Quit",True, (255,255,255)), (100,250))
+        
+        win.blit(menuGame, (100, 200))
+        win.blit(menuLevel, (100,250))
+        win.blit(menuQuit, (100,300))
+        menuGameRect = menuGame.get_rect(topleft=(100, 200))
+        menuLevelRect = menuLevel.get_rect(topleft=(100, 250))
+        menuQuitRect = menuQuit.get_rect(topleft=(100, 300))
         pygame.display.update()
+        
         while menu:
+            pointer = pygame.mouse.get_pos()
+            timeElapsed += timeDelay
+            if menuGameRect.collidepoint(pointer):
+                win.blit(font.render("New Game",True, (255,0,0)), (100,200))
+            else:
+                win.blit(font.render("New Game",True, (255,255,255)), (100,200))
+            if menuLevelRect.collidepoint(pointer):
+                win.blit(font.render("Level",True, (255,0,0)), (100,250))
+            else:
+                win.blit(font.render("Level",True, (255,255,255)), (100,250))
+            if menuQuitRect.collidepoint(pointer):
+                win.blit(font.render("Quit Game",True, (255,0,0)), (100,300))
+            else:
+                win.blit(font.render("Quit Game",True, (255,255,255)), (100,300))
+            pygame.display.update()
             x = pygame.event.get()
             for event in x :
                 if event.type == pygame.KEYDOWN :
@@ -166,8 +194,7 @@ while loop :
                 win.fill((0,0,0))
             elif event.key == pygame.K_v:
                 renderAll()
-                
-                
+                                
         if event.type == pygame.QUIT :
             loop = False
     pygame.display.update()
