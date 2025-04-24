@@ -7,12 +7,12 @@ import copy
 def colorUpdate (colorLs):
     x = random.randint(0,2)
     y = random.randint(0,1)
-    if ((colorLs[x]+75)>255):
-        colorLs[x] -= 75
-    elif ((colorLs[x]-75)<0):
-        colorLs[x] += 75
+    if ((colorLs[x]+100)>255):
+        colorLs[x] -= 100
+    elif ((colorLs[x]-100)<0):
+        colorLs[x] += 100
     else:
-        colorLs[x] = colorLs[x] + ((y-((y+1)%2))*75) # CONVERTING 0/1 TO -1/1 :)
+        colorLs[x] = colorLs[x] + ((y-((y+1)%2))*100) # CONVERTING 0/1 TO -1/1 :)
     return colorLs
 
 def fadeIn (x, colorSet):
@@ -59,6 +59,7 @@ color=[255,255,255]
 colorPresent = [0,0,0]
 colorStep = 0
 movementStack = "rev"
+vel = 10
 
 pygame.init()
 win = pygame.display.set_mode((1600,900))
@@ -72,6 +73,7 @@ while loop :
     if timeElapsed < 2250: #2250/250 = 9, which is no. of initial stacks :)
         if timeElapsed % 250 == 0:
             stackVertices = pushUp (stackVertices)
+            # stackVertices = push (stackVertices,0 )
             stackArray.append(copy.deepcopy(stackVertices))
             color = colorUpdate(color)
             colorArray.append(color.copy())
@@ -88,17 +90,17 @@ while loop :
             colorArray.pop()
         pygame.draw.polygon(win,(0,0,0),stackVertices)
         if (movementStack == "rev"):
-            stackVertices[0][0]-= 10
-            stackVertices[1][0]-= 10
-            stackVertices[2][0]-= 10
-            stackVertices[3][0]-= 10
+            stackVertices[0][0]-= vel
+            stackVertices[1][0]-= vel
+            stackVertices[2][0]-= vel
+            stackVertices[3][0]-= vel
             if stackVertices[1][0]<=(stackArray[-1][0][0]-50):
                 movementStack = "fwd"
         elif (movementStack == "fwd"):
-            stackVertices[0][0]+= 10
-            stackVertices[1][0]+= 10
-            stackVertices[2][0]+= 10
-            stackVertices[3][0]+= 10
+            stackVertices[0][0]+= vel
+            stackVertices[1][0]+= vel
+            stackVertices[2][0]+= vel
+            stackVertices[3][0]+= vel
             if stackVertices[0][0]>=(stackArray[-1][1][0]+50):
                 movementStack = "rev"
         pygame.draw.polygon(win,color,stackVertices)
@@ -109,6 +111,16 @@ while loop :
     for event in x :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE :
+                if stackVertices[0][0] < stackArray[-1][0][0] and stackVertices[1][0] > stackArray[-1][0][0]:
+                    stackVertices[0][0] = stackArray[-1][0][0]
+                    stackVertices[3][0] = stackArray[-1][3][0]
+                elif stackVertices[1][0] > stackArray[-1][1][0] and stackVertices[0][0] < stackArray[-1][1][0]:
+                    stackVertices[1][0] = stackArray[-1][1][0]
+                    stackVertices[2][0] = stackArray[-1][2][0]
+                else:
+                    print("GAME ENDS HERE")
+                    pygame.time.delay(1000)
+                    loop = False
                 stackArray.append(copy.deepcopy(stackVertices))
                 colorArray.append(copy.deepcopy(color))
                 stackArray=list(map(pushDn,stackArray))
@@ -119,6 +131,8 @@ while loop :
                 win.fill((0,0,0))
             elif event.key == pygame.K_v:
                 renderAll()
+            elif event.key == pygame.K_c:
+                print(color)
                 
         if event.type == pygame.QUIT :
             loop = False
