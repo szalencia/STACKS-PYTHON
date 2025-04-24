@@ -44,10 +44,11 @@ def pushDn (vertices):
     return vertices
 
 def renderAll ():
+    win.fill((0,0,0))
     for i in range (len(stackArray)):
         pygame.draw.polygon(win,colorArray[i],stackArray[i])
         pygame.display.update()
-        
+
 
 stackArray = []
 colorArray = []
@@ -60,11 +61,17 @@ colorPresent = [0,0,0]
 colorStep = 0
 movementStack = "rev"
 vel = 10
+toughness = 5
+colorFont = [0,0,0]
 
 pygame.init()
 win = pygame.display.set_mode((1600,900))
 pygame.display.set_caption("TEST")
 x = 0
+font = pygame.font.Font(None, 48)
+menu = True
+
+
 loop = True
 while loop :
     pygame.time.delay(timeDelay)
@@ -82,26 +89,48 @@ while loop :
         colorPresent = fadeIn(colorStep, [colorPresent,color])
         colorStep = colorStep-1
         pygame.draw.polygon(win,colorPresent,stackVertices)
-
-    # GAME LOGICS RENDER
-    else: # Enters right when timeElapsed becomes 2250 at 9th stack :)
+        
+    elif menu:
         if timeElapsed == 2250: # First instance
             stackArray.pop()
             colorArray.pop()
+        for i in range (100):
+            colorFont = fadeIn(100-i, [colorFont,(255,255,255)])
+            pygame.time.delay(timeDelay)
+            win.blit(font.render("STACKS 2D",True, colorFont), (100,100))
+            win.blit(font.render("New Game",True, colorFont), (100,200))
+            win.blit(font.render("Quit",True, colorFont), (100,250))
+            pygame.display.update()
+        
+        win.blit(font.render("STACKS 2D",True, (255,255,255)), (100,100))
+        win.blit(font.render("New Game",True, (255,255,255)), (100,200))
+        win.blit(font.render("Quit",True, (255,255,255)), (100,250))
+        pygame.display.update()
+        while menu:
+            x = pygame.event.get()
+            for event in x :
+                if event.type == pygame.KEYDOWN :
+                    if event.key == pygame.K_SPACE :
+                        renderAll()
+                        menu = False
+    
+    # GAME LOGICS RENDER
+    else: # Enters right when timeElapsed becomes 2250 at 9th stack :)
+        vel = ((stackVertices[1][0]-stackVertices[0][0])/40)+toughness
         pygame.draw.polygon(win,(0,0,0),stackVertices)
         if (movementStack == "rev"):
             stackVertices[0][0]-= vel
             stackVertices[1][0]-= vel
             stackVertices[2][0]-= vel
             stackVertices[3][0]-= vel
-            if stackVertices[1][0]<=(stackArray[-1][0][0]-50):
+            if stackVertices[1][0]<=550:
                 movementStack = "fwd"
         elif (movementStack == "fwd"):
             stackVertices[0][0]+= vel
             stackVertices[1][0]+= vel
             stackVertices[2][0]+= vel
             stackVertices[3][0]+= vel
-            if stackVertices[0][0]>=(stackArray[-1][1][0]+50):
+            if stackVertices[0][0]>=1050:
                 movementStack = "rev"
         pygame.draw.polygon(win,color,stackVertices)
 
@@ -111,10 +140,16 @@ while loop :
     for event in x :
         if event.type == pygame.KEYDOWN :
             if event.key == pygame.K_SPACE :
-                if stackVertices[0][0] < stackArray[-1][0][0] and stackVertices[1][0] > stackArray[-1][0][0]:
+                if ((stackVertices[1][0]-stackVertices[0][0])<2):
+                    print("GAME ENDS HERE")
+                    pygame.time.delay(1000)
+                    loop = False
+                elif ((stackVertices[0][0] < stackArray[-1][0][0]) and (stackVertices[1][0] > stackArray[-1][0][0])):
+                    # LEFT SIDE EXTRA
                     stackVertices[0][0] = stackArray[-1][0][0]
                     stackVertices[3][0] = stackArray[-1][3][0]
-                elif stackVertices[1][0] > stackArray[-1][1][0] and stackVertices[0][0] < stackArray[-1][1][0]:
+                elif ((stackVertices[1][0] > stackArray[-1][1][0]) and (stackVertices[0][0] < stackArray[-1][1][0])):
+                    # RIGHT SIDE EXTRA
                     stackVertices[1][0] = stackArray[-1][1][0]
                     stackVertices[2][0] = stackArray[-1][2][0]
                 else:
@@ -131,8 +166,7 @@ while loop :
                 win.fill((0,0,0))
             elif event.key == pygame.K_v:
                 renderAll()
-            elif event.key == pygame.K_c:
-                print(color)
+                
                 
         if event.type == pygame.QUIT :
             loop = False
