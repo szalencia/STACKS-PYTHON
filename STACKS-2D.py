@@ -74,9 +74,9 @@ menu = True
 
 
 loop = True
-while loop :
-    pygame.time.delay(timeDelay)
 
+while menu :
+    pygame.time.delay(timeDelay)
     # GAME INITIALISATION
     if timeElapsed < 2250: #2250/250 = 9, which is no. of initial stacks :)
         if timeElapsed % 250 == 0:
@@ -90,77 +90,82 @@ while loop :
         colorPresent = fadeIn(colorStep, [colorPresent,color])
         colorStep = colorStep-1
         pygame.draw.polygon(win,colorPresent,stackVertices)
-        
-    elif menu:
-        if timeElapsed == 2250: # First instance
+        pygame.display.update()
+    else :
+        if timeElapsed == 2250: # Menu Fading in at first instance
             stackArray.pop()
             colorArray.pop()
-        for i in range (100):
-            colorFont = fadeIn(100-i, [colorFont,(255,255,255)])
-            pygame.time.delay(timeDelay)
-            timeElapsed += timeDelay
-            win.blit(font.render("STACKS 2D",True, colorFont), (100,100))
-            win.blit(font.render("New Game",True, colorFont), (100,200))
-            win.blit(font.render("Level",True, colorFont), (100,250))
-            win.blit(font.render("Quit Game",True, colorFont), (100,300))
+            for i in range (100):
+                colorFont = fadeIn(100-i, [colorFont,(255,255,255)])
+                pygame.time.delay(timeDelay)
+                timeElapsed += timeDelay
+                win.blit(font.render("STACKS 2D",True, colorFont), (100,100))
+                win.blit(font.render("New Game",True, colorFont), (100,200))
+                win.blit(font.render("Level",True, colorFont), (100,250))
+                win.blit(font.render("Quit Game",True, colorFont), (100,300))
+                pygame.display.update()
+        else : # Normal Menu in Continuation
+            menuGame = font.render("New Game", True, (255, 255, 255))
+            menuLevel = font.render("Level", True, (255, 255, 255))
+            menuQuit = font.render("Quit Game", True, (255, 255, 255))
+        
+            win.blit(font.render("STACKS 2D",True, (255,255,255)), (100,100))
+
+            win.blit(menuGame, (100, 200))
+            win.blit(menuLevel, (100,250))
+            win.blit(menuQuit, (100,300))
+
+            menuGameRect = menuGame.get_rect(topleft=(100, 200))
+            menuLevelRect = menuLevel.get_rect(topleft=(100, 250))
+            menuQuitRect = menuQuit.get_rect(topleft=(100, 300))
+
             pygame.display.update()
 
-        menuGame = font.render("New Game", True, (255, 255, 255))
-        menuLevel = font.render("Level", True, (255, 255, 255))
-        menuQuit = font.render("Quit Game", True, (255, 255, 255))
-        
-        win.blit(font.render("STACKS 2D",True, (255,255,255)), (100,100))
-        
-        win.blit(menuGame, (100, 200))
-        win.blit(menuLevel, (100,250))
-        win.blit(menuQuit, (100,300))
-        menuGameRect = menuGame.get_rect(topleft=(100, 200))
-        menuLevelRect = menuLevel.get_rect(topleft=(100, 250))
-        menuQuitRect = menuQuit.get_rect(topleft=(100, 300))
-        pygame.display.update()
-        
-        while menu:
             pointer = pygame.mouse.get_pos()
-            timeElapsed += timeDelay
-            if menuGameRect.collidepoint(pointer):
-                win.blit(font.render("New Game",True, (255,0,0)), (100,200))
-            else:
-                win.blit(font.render("New Game",True, (255,255,255)), (100,200))
-            if menuLevelRect.collidepoint(pointer):
-                win.blit(font.render("Level",True, (255,0,0)), (100,250))
-            else:
-                win.blit(font.render("Level",True, (255,255,255)), (100,250))
-            if menuQuitRect.collidepoint(pointer):
-                win.blit(font.render("Quit Game",True, (255,0,0)), (100,300))
-            else:
-                win.blit(font.render("Quit Game",True, (255,255,255)), (100,300))
-            pygame.display.update()
-            x = pygame.event.get()
-            for event in x :
-                if event.type == pygame.KEYDOWN :
-                    if event.key == pygame.K_SPACE :
-                        renderAll()
+            menuEvents = pygame.event.get()
+            for event in menuEvents :
+                if menuGameRect.collidepoint(pointer):
+                    win.blit(font.render("New Game", True, (255,0,0)),(100,200))
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        print(pointer)
                         menu = False
+                        win.fill((0,0,0))
+                        renderAll()
+                    
+                elif menuLevelRect.collidepoint(pointer):
+                    win.blit(font.render("Level",True, (255,0,0)), (100,250))
+                elif menuQuitRect.collidepoint(pointer):
+                    win.blit(font.render("Quit Game",True, (255,0,0)), (100,300))
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        print(pointer)
+                        menu = False
+                        loop = False
+                        win.fill((0,0,0))
+            pygame.display.update()
+    timeElapsed += timeDelay
+            
+# menu above
     
-    # GAME LOGICS RENDER
-    else: # Enters right when timeElapsed becomes 2250 at 9th stack :)
-        vel = ((stackVertices[1][0]-stackVertices[0][0])/40)+toughness
-        pygame.draw.polygon(win,(0,0,0),stackVertices)
-        if (movementStack == "rev"):
+while loop :
+    pygame.time.delay(timeDelay)
+    # Enters right when timeElapsed becomes 2250 at 9th stack :)
+    vel = ((stackVertices[1][0]-stackVertices[0][0])/40)+toughness
+    pygame.draw.polygon(win,(0,0,0),stackVertices)
+    if (movementStack == "rev"):
             stackVertices[0][0]-= vel
             stackVertices[1][0]-= vel
             stackVertices[2][0]-= vel
             stackVertices[3][0]-= vel
             if stackVertices[1][0]<=550:
                 movementStack = "fwd"
-        elif (movementStack == "fwd"):
+    elif (movementStack == "fwd"):
             stackVertices[0][0]+= vel
             stackVertices[1][0]+= vel
             stackVertices[2][0]+= vel
             stackVertices[3][0]+= vel
             if stackVertices[0][0]>=1050:
                 movementStack = "rev"
-        pygame.draw.polygon(win,color,stackVertices)
+    pygame.draw.polygon(win,color,stackVertices)
 
     
     # GAME LOGICS ENGINE
