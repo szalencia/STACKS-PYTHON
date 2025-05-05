@@ -25,6 +25,16 @@ def fadeIn(x, colorSet):
     return colorSet[0]  # Returning the Updated colorSet[0] = present
 
 
+'''
+def push (vertices, x): # x=1 is DOWN(+ve) x=0 is UP(-ve)
+    vertices[0][1] += ((x-((x+1)%2))*50)
+    vertices[1][1] += ((x-((x+1)%2))*50)
+    vertices[2][1] += ((x-((x+1)%2))*50)
+    vertices[3][1] += ((x-((x+1)%2))*50)
+    return vertices
+'''
+
+
 def pushUp(vertices):
     vertices[0][1] -= 50
     vertices[1][1] -= 50
@@ -72,6 +82,20 @@ menu = True
 
 loop = True
 
+
+class MenuItem:
+    def __init__(self, s):
+        y = int(s[0])
+        y = 150 + 50 * (y)
+        r = s[-1] * 255
+        s = s[1:-1:1]  # 1Start Game1 = 1st option, Start Game, Red
+        selfText = font.render(s, True, (r, 0, 0), (100, y))
+        rect = selfText.get_rect(topleft=(100, y))
+
+    def renderText(self, ):
+        win.blit(selfText, (100, y))
+
+
 while menu:
     pygame.time.delay(timeDelay)
     # GAME INITIALISATION
@@ -108,10 +132,6 @@ while menu:
 
             win.blit(font.render("STACKS 2D", True, (255, 255, 255)), (100, 100))
 
-            win.blit(menuGame, (100, 200))
-            win.blit(menuLevel, (100, 250))
-            win.blit(menuQuit, (100, 300))
-
             menuGameRect = menuGame.get_rect(topleft=(100, 200))
             menuLevelRect = menuLevel.get_rect(topleft=(100, 250))
             menuQuitRect = menuQuit.get_rect(topleft=(100, 300))
@@ -120,6 +140,7 @@ while menu:
 
             pointer = pygame.mouse.get_pos()
             menuEvents = pygame.event.get()
+            # '''
             for event in menuEvents:
                 if menuGameRect.collidepoint(pointer):
                     win.blit(font.render("New Game", True, (255, 0, 0)), (100, 200))
@@ -131,6 +152,18 @@ while menu:
 
                 elif menuLevelRect.collidepoint(pointer):
                     win.blit(font.render("Level", True, (255, 0, 0)), (100, 250))
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        win.fill((0, 0, 0))
+                        win.blit(font.render("STACKS 2D", True, colorFont), (100, 100))
+                        win.blit(font.render("Easy", True, colorFont), (100, 200))
+                        win.blit(font.render("Medium", True, colorFont), (100, 250))
+                        win.blit(font.render("Hard", True, colorFont), (100, 300))
+                        pygame.display.update()
+                        pygame.time.delay(2000)  # DELAY ADDED TESTING
+                        win.fill((0, 0, 0))
+
+
                 elif menuQuitRect.collidepoint(pointer):
                     win.blit(font.render("Quit Game", True, (255, 0, 0)), (100, 300))
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -138,6 +171,15 @@ while menu:
                         menu = False
                         loop = False
                         win.fill((0, 0, 0))
+                        win.blit(font.render("STACKS 2D", True, colorFont), (100, 100))
+                        win.blit(font.render("Game Quitting", True, colorFont), (100, 200))
+                        pygame.display.update()
+                        pygame.time.delay(500)  # GAME QUITTING DELAY
+                else:
+                    win.blit(menuGame, (100, 200))
+                    win.blit(menuLevel, (100, 250))
+                    win.blit(menuQuit, (100, 300))
+
             pygame.display.update()
     timeElapsed += timeDelay
 
